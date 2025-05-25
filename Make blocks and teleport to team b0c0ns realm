@@ -126,3 +126,45 @@ end)
 if effectsEnabled then
 startEffects()
 end
+
+-- Script Hub GUI
+local player = game.Players.LocalPlayer
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+gui.Name = "ScriptHub"
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 200, 0, 300)
+frame.Position = UDim2.new(0, 10, 0, 170)
+frame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+
+local function makeButton(text, order, callback)
+	local btn = Instance.new("TextButton", frame)
+	btn.Size = UDim2.new(1, -10, 0, 30)
+	btn.Position = UDim2.new(0, 5, 0, 5 + (order - 1) * 35)
+	btn.Text = text
+	btn.BackgroundColor3 = Color3.fromRGB(45, 0, 0)
+	btn.TextColor3 = Color3.new(1, 1, 1)
+	btn.Font = Enum.Font.Code
+	btn.TextSize = 16
+	btn.MouseButton1Click:Connect(callback)
+end
+
+-- Add scripts here
+makeButton("🧱 Chaos Blocks", 1, function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/maxismey10/maxismey10/main/Make%20blocks%20and%20teleport%20to%20team%20b0c0ns%20realm"))()
+end)
+
+makeButton("🧠 Infinite Yield", 2, function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+end)
+
+makeButton("🚀 Fly GUI", 3, function()
+	loadstring(game:HttpGet("https://pastebin.com/raw/U27yQRxS"))()
+end)
+
+makeButton("👁️ ESP", 4, function()
+	loadstring(game:HttpGet("https://pastebin.com/raw/Zx2b8s4C"))()
+end)
