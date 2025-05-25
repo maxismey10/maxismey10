@@ -1,0 +1,128 @@
+-- LocalScript in StarterPlayerScripts
+
+local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+local Lighting = game:GetService("Lighting")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local player = Players.LocalPlayer
+
+-- CONFIG
+local musicId = "rbxassetid://1837879082"
+local placeId = 118178835858819
+local blockCount = 666
+local teleportEnabled = true
+local effectsEnabled = true
+
+-- GUI Setup
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+gui.Name = "ChaosMenu"
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 200, 0, 150)
+frame.Position = UDim2.new(0, 10, 0, 10)
+frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+
+local function makeButton(name, yPos, callback)
+local btn = Instance.new("TextButton", frame)
+btn.Size = UDim2.new(1, -10, 0, 30)
+btn.Position = UDim2.new(0, 5, 0, yPos)
+btn.Text = name
+btn.BackgroundColor3 = Color3.fromRGB(66, 0, 0)
+btn.TextColor3 = Color3.new(1, 1, 1)
+btn.MouseButton1Click:Connect(callback)
+end
+
+-- CRAZY EFFECTS
+local function startEffects()
+-- Flashing Sky
+task.spawn(function()
+while effectsEnabled do
+Lighting.Ambient = Color3.fromRGB(math.random(255), 0, 0)
+Lighting.OutdoorAmbient = Color3.fromRGB(255, math.random(255), 255)
+Lighting.FogEnd = math.random(20, 100)
+Lighting.Brightness = math.random(2, 20)
+wait(0.05)
+end
+end)
+
+-- Screen Shake
+local camera = workspace.CurrentCamera
+task.spawn(function()
+while effectsEnabled do
+camera.CFrame = camera.CFrame * CFrame.new(
+math.random(-1, 1) * 0.5,
+math.random(-1, 1) * 0.5,
+math.random(-1, 1) * 0.5)
+wait(0.01)
+end
+end)
+end
+
+-- Music & Teleport on Touch
+local function setupBlockTouch(part)
+local sound = Instance.new("Sound", part)
+sound.SoundId = musicId
+sound.Volume = 10
+sound.Pitch = 0.3
+sound.Looped = false
+
+local touched = false
+part.Touched:Connect(function(hit)
+if touched or not teleportEnabled then return end
+if hit:IsDescendantOf(player.Character) then
+touched = true
+sound:Play()
+if effectsEnabled then
+for i = 1, 10 do
+local boom = Instance.new("Explosion")
+boom.Position = part.Position + Vector3.new(math.random(-5, 5), math.random(0, 10), math.random(-5, 5))
+boom.BlastRadius = 3
+boom.Parent = workspace
+end
+end
+wait(1)
+TeleportService:Teleport(placeId, player)
+end
+end)
+end
+
+-- Spawn blocks
+local function spawnBlocks()
+for i = 1, blockCount do
+local part = Instance.new("Part")
+part.Size = Vector3.new(6.66, 6.66, 6.66)
+part.Anchored = true
+part.CanCollide = true
+part.Material = Enum.Material.Neon
+part.Color = Color3.fromRGB(255, 0, 0)
+part.Position = Vector3.new(math.random(-666, 666), math.random(10, 200), math.random(-666, 666))
+part.Parent = workspace
+
+local light = Instance.new("PointLight", part)
+light.Color = Color3.new(1, 0, 0)
+light.Range = 20
+light.Brightness = 20
+
+setupBlockTouch(part)
+wait(0.005) -- super fast
+end
+end
+
+-- GUI Buttons
+makeButton("🔥 Spawn 666 Blocks", 10, spawnBlocks)
+makeButton("⚡ Toggle Teleport", 45, function()
+teleportEnabled = not teleportEnabled
+end)
+makeButton("🌈 Toggle Effects", 80, function()
+effectsEnabled = not effectsEnabled
+if effectsEnabled then
+startEffects()
+end
+end)
+
+-- Start effects immediately if enabled
+if effectsEnabled then
+startEffects()
+end
